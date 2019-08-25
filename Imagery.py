@@ -14,34 +14,34 @@ import numpy as np
 import matplotlib.pyplot as plt 
 import copy
 
+import pandas as ps
+
 # Lista de imágenes a procesar
 names = np.array(['170323.tif', '170324.tif', '170614.tif', '171224.tif', '180615.tif'])
 #names = np.array(['170323.tif'])
 
 # Arreglos para contener las imágenes procesadas
-images = [None] * len(names)
-rgbs = [None] * len(names)
-clouds = [None] * len(names)
-clouds = [None] * len(names)
-ndvi = [None] * len(names)
-mndwi = [None] * len(names)
-ui = [None] * len(names)
+images = []
+rgbs = []
+clouds = []
+ndvi = []
+mndwi = []
+ui = []
 
 x = 0
 y = 0
 
+# Guardar el mapa de colores para imágenes RGB
 cmap1 = copy.copy(plt.cm.rainbow)
-print(cmap1)
 
 #=============================================================
 # Recorrer la lista de imágenes
-for k in range(0, len(names)): 
+for imgName in names: 
     
     #=========================================================
     # Leer imagen y separar bandas
-    imgName = names[k];
     im = rs.open(imgName)
-    images[k] = im
+    images.append(im)
     
     blue = im.read(2).astype('float64')
     green = im.read(3).astype('float64')
@@ -57,7 +57,7 @@ for k in range(0, len(names)):
     im_cloud[im_cloud >= l] = 1
     #plot.show(im_cloud)
     
-    clouds[k] = im_cloud
+    clouds.append(im_cloud)
     
 # Fin for
 #=============================================================
@@ -68,7 +68,7 @@ im_cloud = np.zeros(shape=(y,x))
 for k in range(0, len(clouds)): 
     im_cloud[clouds[k] > 0] = 1 
  
-plot.show(im_cloud, title='Clouds')    
+plot.show(im_cloud, title='Clouds', cmap='gray')    
     
     
 #=============================================================
@@ -96,12 +96,12 @@ for k in range(0, len(images)):
     rgb[2,:,:] = blue
     
     rgb = np.uint16(rgb / 256)
-    rgbs[k] = rgb
+    rgbs.append(rgb)
     plot.show(rgb, cmap=cmap1, title=names[k] + ' - RGB')   
     
     #=========================================================
     # NDVI Vegetación
-    ndvi[k] = (nir - red) / (nir + red)
+    ndvi.append((nir - red) / (nir + red))
     
     l = 0.3
     ndvi[k][ndvi[k] < l] = 0
@@ -110,11 +110,11 @@ for k in range(0, len(images)):
     # Quitar píxeles cubiertos por nubes
     ndvi[k][im_cloud == 1] = 0 
     
-    plot.show(ndvi[k], title=names[k] + ' - NDVI')
+    plot.show(ndvi[k], cmap='gray', title=names[k] + ' - NDVI')
     
     #=========================================================
     # MNDWI Water
-    mndwi[k] = (green - swir1) / (green + swir1)
+    mndwi.append((green - swir1) / (green + swir1))
     
     l = 0.08
     mndwi[k][mndwi[k] < l] = 0
@@ -123,11 +123,11 @@ for k in range(0, len(images)):
     # Quitar píxeles cubiertos por nubes
     mndwi[k][im_cloud == 1] = 0 
     
-    plot.show(mndwi[k], title=names[k] + ' - MNDWI')
+    plot.show(mndwi[k], cmap='gray', title=names[k] + ' - MNDWI')
     
     #=========================================================
     # UI Urban index
-    ui[k] = (swir2 - nir) / (swir2 + nir)
+    ui.append((swir2 - nir) / (swir2 + nir))
     
     l = -0.1
     ui[k][ui[k] > l] = 1
@@ -136,7 +136,7 @@ for k in range(0, len(images)):
      # Quitar píxeles cubiertos por nubes
     ui[k][im_cloud == 1] = 0 
     
-    plot.show(ui[k], title=names[k] + ' - UI')
+    plot.show(ui[k], cmap='gray', title=names[k] + ' - UI')
     
 # Fin for
 #=============================================================    
