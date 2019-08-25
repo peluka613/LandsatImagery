@@ -17,6 +17,7 @@ import copy
 import pandas as ps
 
 # Lista de imágenes a procesar
+path = 'images/'
 names = np.array(['170323.tif', '170324.tif', '170614.tif', '171224.tif', '180615.tif'])
 #names = np.array(['170323.tif'])
 
@@ -40,7 +41,7 @@ for imgName in names:
     
     #=========================================================
     # Leer imagen y separar bandas
-    im = rs.open(imgName)
+    im = rs.open(path + imgName)
     images.append(im)
     
     blue = im.read(2).astype('float64')
