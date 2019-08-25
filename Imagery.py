@@ -14,12 +14,13 @@ import numpy as np
 import matplotlib.pyplot as plt 
 import copy
 
-import pandas as ps
+import pandas as pd
 
 # Lista de imágenes a procesar
 path = 'images/'
-names = np.array(['170323.tif', '170324.tif', '170614.tif', '171224.tif', '180615.tif'])
-#names = np.array(['170323.tif'])
+ext = '.tif'
+names = np.array(['170323', '170324', '170614', '171224', '180615'])
+#names = np.array(['170323'])
 
 # Arreglos para contener las imágenes procesadas
 images = []
@@ -41,7 +42,7 @@ for imgName in names:
     
     #=========================================================
     # Leer imagen y separar bandas
-    im = rs.open(path + imgName)
+    im = rs.open(path + imgName + ext)
     images.append(im)
     
     blue = im.read(2).astype('float64')
@@ -142,10 +143,24 @@ for k in range(0, len(images)):
 # Fin for
 #=============================================================    
     
+#=============================================================
+# Contear píxeles de cada clase
+ndvi_px = []
+mndwi_px = []
+ui_px = []
+index = ['NDVI', 'MNDWI', 'UI']
+for k in range(0, len(names)): 
+    ndvi_px.append(np.count_nonzero(ndvi[k]))
+    mndwi_px.append(np.count_nonzero(mndwi[k]))
+    ui_px.append(np.count_nonzero(ui[k]))
     
+# Fin for
     
-    
-    
+results = [ndvi_px, mndwi_px, ui_px]  
+df = pd.DataFrame(results, index=index, columns=names)
+
+print (df)
+#=============================================================   
     
     
     
