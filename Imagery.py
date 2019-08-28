@@ -15,6 +15,7 @@ import matplotlib.pyplot as plt
 import copy
 
 import pandas as pd
+import seaborn as sns
 
 # Lista de imágenes a procesar
 path = 'images/'
@@ -148,7 +149,7 @@ for k in range(0, len(images)):
 ndvi_px = []
 mndwi_px = []
 ui_px = []
-index = ['NDVI', 'MNDWI', 'UI']
+columns = ['NDVI', 'MNDWI', 'UI']
 for k in range(0, len(names)): 
     ndvi_px.append(np.count_nonzero(ndvi[k]))
     mndwi_px.append(np.count_nonzero(mndwi[k]))
@@ -157,10 +158,39 @@ for k in range(0, len(names)):
 # Fin for
     
 results = [ndvi_px, mndwi_px, ui_px]  
-df = pd.DataFrame(results, index=index, columns=names)
+resultsTr = np.transpose(results)
+df = pd.DataFrame(results, index=columns, columns=names)
 
-print (df)
+dfTr = pd.DataFrame(resultsTr, index=names, columns=columns)
+
+print('=============================================================')
+print('CONTEO DE PÍXELES')
+print (dfTr)
+print('=============================================================')
+print('ESTADÍSTICAS')
+print(dfTr.describe())
+print('=============================================================')
+
+
+
 #=============================================================   
-    
-    
-    
+# Graficar
+
+
+
+
+d = {'names': names, 'PIXELES': mndwi_px}
+pdnumsqr = pd.DataFrame(d)
+sns.lineplot(x=df.columns, y='PIXELES', data=pdnumsqr)
+
+sns.set_color_codes("dark")
+
+plt.xlabel('Imagenes')
+plt.ylabel('Conteo de pixeles')
+
+plt.plot(mndwi_px, color="b")
+plt.plot(ndvi_px, color="g")
+plt.plot(ui_px, color="r")
+#============================================================= 
+
+
