@@ -139,6 +139,9 @@ for k in range(0, len(images)):
      # Quitar píxeles cubiertos por nubes
     ui[k][im_cloud == 1] = 0 
     
+     # Quitar píxeles reconocidos como agua
+    ui[k][mndwi[k] == 1] = 0 
+    
     plot.show(ui[k], cmap='gray', title=names[k] + ' - UI')
     
 # Fin for
