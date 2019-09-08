@@ -181,35 +181,40 @@ print('=============================================================')
 #=============================================================   
 # Graficar
 
-
+# Gráfica de cada clasificaciión
 fig, ax = plt.subplots()
-ax.plot(ndvi_px, 'g:', label='NDVI')
-ax.plot(ui_px, 'r', label='UI')
-ax.plot(mndwi_px, 'b--', label='MNDWI')
+ax.plot(ndvi_px, 'g', label='NDVI Vegetacion')
+ax.plot(ui_px, 'r', label='UI Urbano')
+ax.plot(mndwi_px, 'b', label='MNDWI Aguas')
 
+# Localización automática de las etiquetas
 legend = ax.legend(loc='best')
 
+# Gráfica de los puntos de cada clasificaciión
 plt.plot(ndvi_px, "go")
 plt.plot(ui_px, "ro")
 plt.plot(mndwi_px, 'bo')
 
-
+# Medidas del eje X
 d = {'names': names, 'PIXELES': mndwi_px}
 pdnumsqr = pd.DataFrame(d)
 sns.lineplot(x=df.columns, y='PIXELES', data=pdnumsqr)
 
-plt.xlabel('Imagenes')
-plt.ylabel('Conteo de pixeles')
+# Configuracion del plot
+plt.xlabel('Imagenes en el tiempo')
+plt.ylabel('Conteo de pixeles por clasificacion')
 plt.grid(b=None, which='both', axis='both')
+plt.yscale('symlog')
 
+# Anotar los valores
 for i,j in zip(names,ndvi_px):
-    ax.annotate(str(j),xy=(i,j-7000))
+    ax.annotate(str(j),xy=(i,j-50000))
     
 for i,j in zip(names,ui_px):
-    ax.annotate(str(j),xy=(i,j+4000))
+    ax.annotate(str(j),xy=(i,j+1000))
 
 for i,j in zip(names,mndwi_px):
-    ax.annotate(str(j),xy=(i,j-4000))    
+    ax.annotate(str(j),xy=(i,j+200))    
 
 #============================================================= 
 
