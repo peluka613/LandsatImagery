@@ -19,8 +19,8 @@ import seaborn as sns
 
 # Lista de imágenes a procesar
 path = 'images/'
-ext = '.tif'
-names = np.array(['170323', '170324', '170614', '171224', '180615'])
+names = np.array(['170323.tif', '170324.tif', '170614.tif', '171224.tif'])
+#names = np.array(['170323.tif', '170324.tif', '170614.tif', '171224.tif', '180615.tif'])
 #names = np.array(['170323'])
 
 # Arreglos para contener las imágenes procesadas
@@ -43,7 +43,7 @@ for imgName in names:
     
     #=========================================================
     # Leer imagen y separar bandas
-    im = rs.open(path + imgName + ext)
+    im = rs.open(path + imgName)
     images.append(im)
     
     blue = im.read(2).astype('float64')
@@ -130,9 +130,9 @@ for k in range(0, len(images)):
     
     #=========================================================
     # UI Urban index
-    ui.append((swir2 - nir) / (swir2 + nir))
+    ui.append((swir1 - nir) / (swir1 + nir))
     
-    l = -0.1
+    l = 0.06
     ui[k][ui[k] > l] = 1
     ui[k][ui[k] <= l] = 0
     
@@ -152,15 +152,17 @@ for k in range(0, len(images)):
 ndvi_px = []
 mndwi_px = []
 ui_px = []
-columns = ['NDVI', 'MNDWI', 'UI']
+total = []
+columns = ['NDVI', 'MNDWI', 'UI', 'TOTAL']
 for k in range(0, len(names)): 
     ndvi_px.append(np.count_nonzero(ndvi[k]))
     mndwi_px.append(np.count_nonzero(mndwi[k]))
     ui_px.append(np.count_nonzero(ui[k]))
+    total.append(ndvi_px[k] + mndwi_px[k] + ui_px[k])
     
 # Fin for
     
-results = [ndvi_px, mndwi_px, ui_px]  
+results = [ndvi_px, mndwi_px, ui_px, total]  
 resultsTr = np.transpose(results)
 df = pd.DataFrame(results, index=columns, columns=names)
 
@@ -180,20 +182,35 @@ print('=============================================================')
 # Graficar
 
 
+fig, ax = plt.subplots()
+ax.plot(ndvi_px, 'g:', label='NDVI')
+ax.plot(ui_px, 'r', label='UI')
+ax.plot(mndwi_px, 'b--', label='MNDWI')
+
+legend = ax.legend(loc='best')
+
+plt.plot(ndvi_px, "go")
+plt.plot(ui_px, "ro")
+plt.plot(mndwi_px, 'bo')
 
 
 d = {'names': names, 'PIXELES': mndwi_px}
 pdnumsqr = pd.DataFrame(d)
 sns.lineplot(x=df.columns, y='PIXELES', data=pdnumsqr)
 
-sns.set_color_codes("dark")
-
 plt.xlabel('Imagenes')
 plt.ylabel('Conteo de pixeles')
+plt.grid(b=None, which='both', axis='both')
 
-plt.plot(mndwi_px, color="b")
-plt.plot(ndvi_px, color="g")
-plt.plot(ui_px, color="r")
+for i,j in zip(names,ndvi_px):
+    ax.annotate(str(j),xy=(i,j-7000))
+    
+for i,j in zip(names,ui_px):
+    ax.annotate(str(j),xy=(i,j+4000))
+
+for i,j in zip(names,mndwi_px):
+    ax.annotate(str(j),xy=(i,j-4000))    
+
 #============================================================= 
 
 
